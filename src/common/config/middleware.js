@@ -3,10 +3,8 @@ const isDev = think.env === 'development';
 const cors = require('@koa/cors')
 const jwt = require('koa-jwt')
 const payload = require('think-payload');
-// const swaggerParser = require('think-swagger-parser')
-// const swaggerRouter = require('think-swagger-router')
-// const swaggerController = require('think-swagger-controller')
-// const whitelist = ['http://picker.cc', 'http://api.picker.la', 'http://zy.picker.la'];
+const routerREST = require('think-router-rest');
+
 module.exports = [
   {
     handle: 'meta',
@@ -20,7 +18,8 @@ module.exports = [
     enable: isDev,
     options: {
       root: path.join(think.ROOT_PATH, 'www'),
-      publicPath: /^\/(static|favicon\.ico)/
+      publicPath: /^\/(static\/|theme\/|[^/]+\.(?!js|html|xml)\w+$)/
+      // publicPath: /^\/(static|favicon\.ico)/
     }
   },
   {
@@ -57,10 +56,14 @@ module.exports = [
   {
     handle: 'router',
     options: {
+      prefix: ['/']
       // defaultModule: 'api',
       // defaultController: 'index',
       // defaultAction: 'index'
     }
+  },
+  {
+    handle: routerREST
   },
   {
     handle: (option, app) => {
@@ -109,5 +112,10 @@ module.exports = [
     }
   },
   'logic',
-  'controller'
+  {
+    handle: 'controller',
+    options: {
+      emptyController: 'base'
+    }
+  }
 ]

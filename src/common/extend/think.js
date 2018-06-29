@@ -5,8 +5,15 @@ const tc = require('./textcensor')
 const qetag = require('./qetag')
 const Redis = require('ioredis')
 const isDev = think.env === 'development'
+const preventMessage = 'PREVENT_NEXT_PROCESS'
 
 module.exports = {
+  prevent () {
+    throw new Error(preventMessage)
+  },
+  isPrevent(err) {
+    return think.isError(err) && err.message === preventMessage
+  },
   _: lodash,
   redis: new Redis({
     port: isDev ? 6379 : 6377,
